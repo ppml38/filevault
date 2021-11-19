@@ -3,6 +3,8 @@ Filevault is a secure file manager, accessed via command line.
 This can be used to store your confidential documents, picture, movies, music etc. securely.
 
 All you have to remember is your Master password.
+## Demo
+![filevault demo](/art/demo.png)
 
 Below the steps it follows to store your documents securely,
   1. Adds random junks to your document (So that, if someone gets access to your system, they wont know which is part of your document and which is a random junk)
