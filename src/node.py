@@ -26,6 +26,8 @@ class node:
         else:
             self.children=[]
             self.hardfilelist=None
+    def __str__(self):
+        return str({"name":self.name,"nodetype":self.nodetype,"parent":self.parent.getrealname(),"children":[a.getrealname() for a in self.children] if self.children else str(self.children),"hardfiles":self.hardfilelist})
     def getname(self):
         return self.name
     def getrealname(self):

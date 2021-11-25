@@ -20,6 +20,9 @@ class filestruct:
         self.vaultpath=path
         self.root=node('','dir')
         self.pwd=self.root
+        #If the vault path doesn't exist already, This may be the first run. hence create it.
+        if not os.path.exists(path):
+            os.mkdir(path)
         if len(os.listdir(path))==0:
             #Empty vault
             pass
@@ -40,22 +43,18 @@ class filestruct:
                 else:
                     files[key]=[None]*(pos+1)
                 files[key][pos]=i
-            #print(files)
             #combine files of _0 and _llen into one.
-            cfiles={}
             ds=[]
             for f in files:
                 if f.split("_")[-1]!="0":
                     count=0
-                    if f.split("_")[0]+"_0" in files:
-                        for i in files[f.split("_")[0]+"_0"]: #copy from _0 to _llen and delete _0
+                    if f[:f.rfind("_")]+"_0" in files:
+                        for i in files[f[:f.rfind("_")]+"_0"]: #copy from _0 to _llen and delete _0
                             files[f][count]=i
                             count+=1
                         ds.append(f)
             for i in ds:
                 del files[i[:i.rfind("_")]+"_0"]
-            #print(files)
-            #input()
             for f in files:
                 self.recursively_addfile(f,files[f],self.root)
     def getpwd(self):
@@ -80,7 +79,7 @@ class filestruct:
                 f.append(i.getrealname())
         d.sort()
         f.sort()
-        return ["."+os.sep,".."+os.sep]+d+f
+        return d+f
     def getnode(self,path,nodetype=None,current_node=None):
         """
         Searches for the path provided and returns the nodes that match

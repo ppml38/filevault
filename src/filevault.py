@@ -16,21 +16,25 @@ if __name__=='__main__':
     VAULTPATH='vaultpath'
     VAULT_FILENAME_LENGTH='vault_filename_length'
     BLOCK_LENGTH='block_length'
-    CONF_FILE="filevault.conf"
+    SHOWDOT='showdot'
+    #In windows this will be C:\\Users\\USER\\conf.conf
+    #In mac and linux this will be \Home\USER\conf.conf
+    CONF_FILE= os.path.expanduser('~'+os.sep+"filevault.conf") #Cross platform conf file location
     #Run starts
     conf=config(CONF_FILE)
-    os.system('cls')
+    os.system('cls||clear') #Mac accepts only clear not cls 
     MASTERPASSWORD=getpass.getpass("Master password:")
-        
     #Read through the filevault and generate file structure tree
-    fs=filestruct(conf.get(VAULTPATH),MASTERPASSWORD,conf.get(VAULT_FILENAME_LENGTH),conf.get(BLOCK_LENGTH))
+    fs=filestruct(os.path.expanduser(conf.get(VAULTPATH)),MASTERPASSWORD,conf.get(VAULT_FILENAME_LENGTH),conf.get(BLOCK_LENGTH))
     while True:
-        os.system('cls')
+        os.system('cls||clear')
         userio.cprint("--------------------------------------------",'cyan')
         userio.fprint("@green@FILEVAULT:@#green@ @cyan@"+fs.getfullpath()+"@#cyan@")
         userio.cprint("--------------------------------------------",'cyan')
         #Show first level directory list
         clist=fs.ls()
+        if conf.get(SHOWDOT)=='true': #Add . and .. in the file list with other files.
+            clist=["."+os.sep,".."+os.sep]+clist
         if clist:
             for i in clist:
                 if i[-1]==os.sep:

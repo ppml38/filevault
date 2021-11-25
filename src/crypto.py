@@ -2,6 +2,7 @@ import os
 import math
 import string
 import random
+import base64
 class crypto:
     def encrypt(plain,password=''):
         """
@@ -32,6 +33,10 @@ class crypto:
         
     def encrypt_filename(filename,password,length):
         length=int(length)
+        
+        #We have to add salt of 10% of filename length
+        salt_length=10
+        
         #Given file name is in the format of path\to\filename_0:1, path\to\filename_21:3 etc.
         if password=='': #If password is empty data handled in plain. no encryption or decryption
             return filename
@@ -43,27 +48,40 @@ class crypto:
         #if it is less than required length add junk in the end, like if length=30, then 18_path\to\filename_1hdncjfiej
         if len(filename)<length:
             filename+=crypto.new_random_name(length-len(filename))
-        print(filename)
+        #print(filename)
         #Get ready for encryption
         password=bytes(password,'utf-8')
         filename=bytes(filename,'utf-8')
         #Encrypt it with password like jfheydhcnfhgptdhsncjfieodfdscd
         key=password*math.ceil(len(filename)/len(password))
         cip=[i^j for i,j in zip(filename,key)]
+        
         #Shuffle it with password
+        #Since bare shuffling gives pretty much similar name for related files, we are adding salt here.
         offsets=[int(a)%length for a in password]
         offsets=offsets*math.ceil(length/len(offsets))
         for i in range(0,length):
             cip[i],cip[offsets[i]]=cip[offsets[i]],cip[i]
         
         #return
-        return '_'.join([str(a) for a in cip])
+        
+        #Commenting out old method that produced '_' seperated int filenames
+        #return '_'.join([str(a) for a in cip])
+        
+        #Convert the int array into hex string and return
+        return ''.join([chr(i) for i in base64.b16encode(bytes(cip))])
 
 
     def decrypt_filename(cipher,password,length):
         length=int(length)
         #Get bytes out of string
-        cip=[int(a) for a in cipher.split('_')]
+        
+        #Commenting out old method
+        #cip=[int(a) for a in cipher.split('_')]
+        
+        #Convert hex string into int array
+        cip=[int(i) for i in bytearray.fromhex(cipher)]
+        
         password=bytes(password,'utf-8')
         
         #Un-shuffle cipher bytes
